@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Toque Insano</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+</head>
+<body>
+    <!-- TELA INICIAL -->
+    <div id="screen-menu" class="screen active">
+        <div class="menu-container">
+            <h1 class="game-title">TOQUE<span class="highlight">INSANO</span></h1>
+            <p class="subtitle">Velocidade e Reflexo</p>
+            
+            <div class="high-score-box">
+                <span>RECORDE</span>
+                <h2 id="menu-high-score">0</h2>
+            </div>
+
+            <div class="menu-buttons">
+                <button id="btn-play" class="btn primary">JOGAR</button>
+                <button id="btn-howtoplay" class="btn secondary">COMO JOGAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE COMO JOGAR -->
+    <div id="screen-how" class="screen">
+        <div class="menu-container">
+            <h2>COMO JOGAR</h2>
+            <div class="instructions-box">
+                <p>🎯 Toque no alvo o mais rápido possível antes que o tempo acabe.</p>
+                <p>❤️ Você perde uma vida se errar o toque ou se o tempo esgotar.</p>
+                <p>⚡ A cada acerto, o jogo fica mais rápido e difícil!</p>
+            </div>
+            <button id="btn-back-menu" class="btn secondary">VOLTAR</button>
+        </div>
+    </div>
+
+    <!-- TELA DO JOGO -->
+    <div id="screen-game" class="screen">
+        <div class="game-header">
+            <div class="stat-item">
+                <span class="stat-label">PONTOS</span>
+                <span id="current-score" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">VIDAS</span>
+                <span id="current-lives" class="stat-value">❤️ ❤️ ❤️</span>
+            </div>
+        </div>
+
+        <div class="time-bar-container">
+            <div id="time-bar" class="time-bar"></div>
+        </div>
+
+        <div id="game-area" class="game-area">
+            <div id="target" class="target hidden"></div>
+        </div>
+    </div>
+
+    <!-- TELA DE GAME OVER -->
+    <div id="screen-gameover" class="screen">
+        <div class="menu-container">
+            <h2 class="game-over-title">GAME OVER</h2>
+            
+            <div class="score-summary">
+                <div class="summary-item">
+                    <span>Pontuação Final</span>
+                    <h3 id="final-score">0</h3>
+                </div>
+                <div class="summary-item">
+                    <span>Melhor Recorde</span>
+                    <h3 id="final-high-score">0</h3>
+                </div>
+            </div>
+
+            <div id="new-record-alert" class="new-record hidden">🎉 NOVO RECORDE! 🎉</div>
+
+            <div class="menu-buttons">
+                <button id="btn-restart" class="btn primary">JOGAR NOVAMENTE</button>
+                <button id="btn-menu" class="btn secondary">MENU PRINCIPAL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log("Service Worker registado com sucesso!"))
+                .catch((err) => console.log("Erro ao registar Service Worker:", err));
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
