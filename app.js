@@ -1,12 +1,11 @@
-// Elementos das Telas
 const screens = {
     menu: document.getElementById('screen-menu'),
+    store: document.getElementById('screen-store'),
     how: document.getElementById('screen-how'),
     game: document.getElementById('screen-game'),
     gameover: document.getElementById('screen-gameover')
 };
 
-// Elementos de Jogo
 const scoreEl = document.getElementById('current-score');
 const livesEl = document.getElementById('current-lives');
 const timeBar = document.getElementById('time-bar');
@@ -16,25 +15,48 @@ const finalScoreEl = document.getElementById('final-score');
 const finalHighScoreEl = document.getElementById('final-high-score');
 const menuHighScoreEl = document.getElementById('menu-high-score');
 const newRecordAlert = document.getElementById('new-record-alert');
+const vipStatusText = document.getElementById('vip-status-text');
 
-// Estado do Jogo
 let score = 0;
 let lives = 3;
 let highScore = localStorage.getItem('toque_insano_highscore') || 0;
+let isVip = localStorage.getItem('toque_insano_vip') === 'true';
 let gameInterval = null;
 let timeLeft = 100;
 let decreaseRate = 1.5;
 let targetSize = 70;
 
-// Atualiza o recorde na tela inicial ao carregar
 menuHighScoreEl.textContent = highScore;
+updateVipUI();
 
-// Botões
+// Eventos de Navegação
 document.getElementById('btn-play').addEventListener('click', () => switchScreen('game'));
+document.getElementById('btn-store').addEventListener('click', () => switchScreen('store'));
 document.getElementById('btn-howtoplay').addEventListener('click', () => switchScreen('how'));
+document.getElementById('btn-back-store').addEventListener('click', () => switchScreen('menu'));
 document.getElementById('btn-back-menu').addEventListener('click', () => switchScreen('menu'));
 document.getElementById('btn-menu').addEventListener('click', () => switchScreen('menu'));
 document.getElementById('btn-restart').addEventListener('click', () => switchScreen('game'));
+
+// Ativação Pix com o seu link real do Mercado Pago
+document.getElementById('btn-buy-pix').addEventListener('click', () => {
+    // Abre o seu link de pagamento do Mercado Pago
+    window.open('https://mpago.la/2J3xUR3', '_blank');
+    
+    // Ativa o benefício VIP no dispositivo do jogador
+    localStorage.setItem('toque_insano_vip', 'true');
+    isVip = true;
+    updateVipUI();
+    alert("Parabéns! Conta VIP ativada com sucesso.");
+});
+
+function updateVipUI() {
+    if (isVip) {
+        vipStatusText.textContent = "✨ Status: CONTA VIP ATIVA (Sem Anúncios)";
+    } else {
+        vipStatusText.textContent = "✨ Status: Conta Gratuita (Com Anúncios)";
+    }
+}
 
 function switchScreen(screenName) {
     Object.keys(screens).forEach(key => {
@@ -51,7 +73,8 @@ function switchScreen(screenName) {
 
 function startGame() {
     score = 0;
-    lives = 3;
+    // Se for VIP, ganha 1 vida bônus extra como vantagem freemium!
+    lives = isVip ? 4 : 3;
     decreaseRate = 1.5;
     targetSize = 70;
     updateUI();
@@ -99,18 +122,15 @@ function startTimer() {
     }, 50);
 }
 
-// Evento de clique no alvo (Acerto)
 target.addEventListener('click', (e) => {
     e.stopPropagation();
     score += 100;
     updateUI();
     
-    // Vibração leve ao acertar (se suportado pelo telemóvel)
     if (navigator.vibrate) {
         navigator.vibrate(40);
     }
     
-    // Criar efeito de partículas no local do toque
     createParticles(e.clientX, e.clientY);
     
     decreaseRate += 0.08;
@@ -121,10 +141,9 @@ target.addEventListener('click', (e) => {
     spawnTarget();
 });
 
-// Evento de clique na área do jogo fora do alvo (Erro)
 gameArea.addEventListener('click', (e) => {
     if (navigator.vibrate) {
-        navigator.vibrate([60, 60, 60]); // Vibração dupla de erro
+        navigator.vibrate([60, 60, 60]);
     }
     handleMiss();
 });
@@ -135,12 +154,10 @@ function createParticles(x, y) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
         
-        // Posição relativa à área de jogo
         const rect = gameArea.getBoundingClientRect();
         particle.style.left = `${x - rect.left}px`;
         particle.style.top = `${y - rect.top}px`;
         
-        // Direção aleatória da partícula
         const angle = Math.random() * Math.PI * 2;
         const distance = Math.random() * 50 + 20;
         const dx = Math.cos(angle) * distance;
@@ -151,7 +168,6 @@ function createParticles(x, y) {
         
         gameArea.appendChild(particle);
         
-        // Remove a partícula após a animação
         setTimeout(() => {
             particle.remove();
         }, 400);
@@ -171,6 +187,10 @@ function handleMiss() {
 
 function endGame() {
     stopGame();
+    
+    if (!isVip) {
+        console.log("Exibindo anúncio intersticial para utilizador Free...");
+    }
     
     finalScoreEl.textContent = score;
     finalHighScoreEl.textContent = highScore;
